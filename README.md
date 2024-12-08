@@ -1,30 +1,50 @@
+# ESP32-OSCAR-WB-Spectrum-Monitor
 
-# MLA-Controller-Master
-https://eshail.batc.org.uk/wb/
+This repository contains the code for an ESP32-based application that displays the wideband spectrum of the Qatar-OSCAR 100 (QO-100) satellite on a 4" TFT display (ILI9488). The spectrum display is similar to the one available on the [BATC Wideband Spectrum Monitor page](https://eshail.batc.org.uk/wb/).
 
-# Inspired by https://www.zr6tg.co.za/2022/06/23/oscar-100-wideband-spectrum-clock/
+## Inspiration
 
+This project is inspired by Tom's [Oscar 100 Wideband Spectrum Clock](https://www.zr6tg.co.za/2022/06/23/oscar-100-wideband-spectrum-clock/). I want to acknowledge that this is not an original idea of mine; instead, it builds upon Tom's work. While his implementation integrates with Open Tuner software, my adaptation is designed to run independently on an ESP32 connected to the Internet via WiFi.
 
+## About This Project
 
-This repository contains the code for the **ESP32 microcontroller** functioning as the **MASTER** device in the Magnetic Loop Antenna (MLA) Controller system. The MASTER is equipped with a TFT touchscreen interface, providing users with a graphical interface to control and monitor the system's operations.
-![Alt Text](https://raw.githubusercontent.com/HB9IIU/Magnetic-Loop-Antenna-Controller/main/MLA-Controller-Master/doc/Misc/MASTER.png)
+The key difference in this project is that the functionality has been ported to run on an ESP32 microcontroller with a connected 4" ILI9488 TFT display. The ESP32's limited resources mean that the application does not run as fast or smoothly as the BATC webpage, but it serves as a compact, standalone solution for monitoring QO-100 wideband transponder activity. The display provides a visual indication of band activity, making it useful for quick monitoring.
 
-## Overview
+### Features
 
-The MASTER device retrieves the VFO (Variable Frequency Oscillator) frequency from a compatible transceiver (e.g., IC-705 via Bluetooth) and communicates wirelessly with the SLAVE ESP32 device to adjust the tuning capacitor. The graphical interface simplifies interaction, allowing precise control and real-time feedback during operation.
+- **Standalone Solution**: No need for a PC or additional software.
+- **Compact Hardware**: Powered by an ESP32 and a 4" TFT display.
+- **Simple Spectrum Display**: Offers a real-time indication of transponder activity.
+- **Lightweight Design**: Optimized to work within the constraints of the ESP32 platform.
 
-## Key Features
+### Limitations
 
-- **TFT Touchscreen**: Provides an intuitive user interface for controlling and monitoring the system.
-- **Wireless Communication**: Communicates with the SLAVE ESP32 over an ad hoc 2.4 GHz network for field portability.
-- **Seamless Tuning**: Automatically adjusts the MLA tuning capacitor based on the VFO frequency retrieved from the transceiver.
-- **Real-Time Feedback**: Displays system status, tuning progress, and SWR readings on the screen.
+- Due to the ESP32's limited processing power, the refresh rate and overall performance are slower than Tom's implementation or the BATC webpage.
+- The display is for quick monitoring and is not as detailed or feature-rich as the BATC online monitor or Tom’s PC-based solution.
 
-## Important Notes
+## Getting Started
 
-- **Included Libraries**: All required libraries are already included in the `lib` folder. There is no need to install additional libraries.
-- **Recommended IDE**: This code is designed to be compiled using [PlatformIO](https://platformio.org/) in Visual Studio Code. PlatformIO offers an efficient and streamlined environment for ESP32 development.
+### Hardware Requirements
 
-## Documentation
+- ESP32 microcontroller
+- 4" TFT display (ILI9488)
+- Power supply for the ESP32 and display
 
-For more information about the system's functionality, initial setup, and additional features, please refer to the [main repository README](https://github.com/HB9IIU/Magnetic-Loop-Antenna-Controller/tree/main).
+### Software Requirements
+
+- PlatformIO for compiling and uploading the code
+- Required libraries are already included in the `lib` folder, so no additional installation is needed.
+
+### Installation
+
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/yourusername/ESP32-OSCAR-WB-Spectrum-Monitor.git
+   ```
+2. Open the project in your preferred development environment.
+3. Compile and upload the code to your ESP32.
+
+## Acknowledgments
+
+- Special thanks to the [BATC](https://batc.org.uk/) and [AMSAT-UK](https://amsat-uk.org/) for their contributions to the amateur radio community and tools like the [Wideband Spectrum Monitor](https://eshail.batc.org.uk/wb/).
+- Thanks to Tom ([ZR6TG](https://www.zr6tg.co.za)) for his original work on the Oscar 100 Wideband Spectrum Clock, which inspired this project.
