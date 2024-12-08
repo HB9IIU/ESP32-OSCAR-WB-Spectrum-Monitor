@@ -10,6 +10,22 @@ This project is inspired by Tom's [Oscar 100 Wideband Spectrum Clock](https://ww
 
 The key difference in this project is that the functionality has been ported to run on an ESP32 microcontroller with a connected 4" ILI9488 TFT display. The ESP32's limited resources mean that the application does not run as fast or smoothly as the BATC webpage, but it serves as a compact, standalone solution for monitoring QO-100 wideband transponder activity. The display provides a visual indication of band activity, making it useful for quick monitoring.
 
+## Demo
+
+Check out the project in action on YouTube:  
+[![Watch the demo](https://img.youtube.com/vi/hN2jycwo034/0.jpg)](https://www.youtube.com/watch?v=hN2jycwo034)  
+*(Right-click on the video link to open in a new tab.)*
+
+## Screenshots
+
+Here are a few screenshots of the project:  
+- ![Screenshot 1](https://link-to-screenshot-1.com)  
+- ![Screenshot 2](https://link-to-screenshot-2.com)  
+- ![Screenshot 3](https://link-to-screenshot-3.com)  
+
+
+
+
 ### Features
 
 - **Standalone Solution**: No need for a PC or additional software.
@@ -21,8 +37,6 @@ The key difference in this project is that the functionality has been ported to 
 
 - Due to the ESP32's limited processing power, the refresh rate and overall performance are slower than Tom's implementation or the BATC webpage.
 - The display is for quick monitoring and is not as detailed or feature-rich as the BATC online monitor or Tom’s PC-based solution.
-
-## Getting Started
 
 ### Hardware Requirements
 
