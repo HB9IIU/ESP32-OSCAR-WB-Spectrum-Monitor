@@ -20,7 +20,9 @@ uint16_t navyBlue = tft.color565(0, 0, 128);
 uint16_t darkBlue = tft.color565(0, 9, 75);
 uint16_t bgColor = darkBlue;
 
-const char *websocketServer = "185.83.169.27"; // IP of the server
+const char *websocketServer = "eshail.batc.org.uk"; // IP of the server
+
+
 const int websocketPort = 443;                 // Port for WSS
 
 //
@@ -72,7 +74,7 @@ void handleFFTData(uint8_t *payload, size_t length)
   static bool isFirstRun = true;
   static bool isBeacon = true;
   int leftMargin = 5;
-  int topMarging = 60;
+  int topMargin = 50;
   if (isFirstRun)
   {
     for (int i = 0; i < 461; i++)
@@ -91,8 +93,7 @@ void handleFFTData(uint8_t *payload, size_t length)
   // Clean right margin
   for (int i = leftMargin + 460; i <= 480; i++)
   {
-
-    tft.drawLine(i, topMarging, i, 320, bgColor); // Mark center of signal
+    tft.drawLine(i, topMargin, i, 320, bgColor); // Mark center of signal
   }
   const size_t numFFTValues = length / 4; // Using every second value, hence length/4
   uint16_t fftValues[numFFTValues];
@@ -106,7 +107,8 @@ void handleFFTData(uint8_t *payload, size_t length)
     uint16_t yCoord = yCordFromFFTvalue(fftValue);
     uint16_t previousYcoord = previousYcoordValue[xCoord];
 
-    tft.drawLine(xCoord + leftMargin, topMarging, xCoord + leftMargin, yCoord, bgColor);
+    tft.drawLine(xCoord + leftMargin, topMargin, xCoord + leftMargin, yCoord, bgColor);
+    // tft.drawLine(xCoord + leftMargin, topMargin, xCoord + leftMargin, yCoord, TFT_YELLOW);
 
     for (int y = 320; y > yCoord; y -= 1)
     {
@@ -207,7 +209,11 @@ void handleFFTData(uint8_t *payload, size_t length)
           tft.setFreeFont(&FreeMono9pt7b);         // Use the FreeMono9pt7b font
           tft.setCursor(xPosition, yatCenter - 8); // Set the cursor position
           tft.setTextColor(TFT_WHITE, TFT_BLACK);  // Set the text color (foreground, background)
-          tft.print(dbLabel);                      // Print the text
+          if ((yatCenter - 8) > topMargin)
+          {
+
+            tft.print(dbLabel);
+          }
         }
       }
     }
@@ -240,17 +246,16 @@ void handleFFTData(uint8_t *payload, size_t length)
   getLocalTime();
 }
 
-// Function to handle WebSocket events
 // Declare a global variable to track the last execution time
 unsigned long lastFFTProcessTime = 0; // In milliseconds
-
+// Function to handle WebSocket events
 void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
 {
   switch (type)
   {
   case WStype_BIN:
     // Process FFT data only if 1 second has passed since the last processing
-    if (millis() - lastFFTProcessTime >= 1500)
+    if (millis() - lastFFTProcessTime >= fftProcessDelay)
     {
       handleFFTData(payload, length); // Call the processing function
       lastFFTProcessTime = millis();  // Update the last execution time
@@ -259,6 +264,9 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
 
   case WStype_DISCONNECTED:
     Serial.println("WebSocket Disconnected");
+    WiFi.disconnect();
+    delay(500);
+    connectToWifi();
     break;
 
   case WStype_CONNECTED:
@@ -282,34 +290,28 @@ void setup()
   // Initialize the TFT display
   pinMode(TFT_BLP, OUTPUT);
   digitalWrite(TFT_BLP, HIGH); // Turn on the backlight
-
-  tft.begin(); // Initialize the TFT
+  tft.begin();
   tft.fillScreen(bgColor);
-  tft.setRotation(1); // Set rotation if needed
+  tft.setRotation(1);
 
   String text = "OSCAR 100 Wideband Spectrum Monitor"; // The text to display
   tft.setTextFont(4);
   tft.setTextColor(TFT_WHITE); // Set text color
   tft.setTextSize(1);          // Set text size (you can adjust this value)
-  // Calculate the text width
-  int16_t textWidth = tft.textWidth(text);
 
-  // Calculate the starting x position to center the text
+  int16_t textWidth = tft.textWidth(text);
   int xPos = (480 - textWidth) / 2;
   tft.setCursor(xPos, 5);
   tft.print(text);
 
-
- text = "Offered freely by HB9IIU"; // The text to display
-  tft.setTextColor(TFT_CYAN);           // Set text color
+  text = "Offered Freely by HB9IIU"; // The text to display
+  tft.setTextColor(TFT_CYAN);        // Set text color
   textWidth = tft.textWidth(text);
   xPos = (480 - textWidth) / 2;
   tft.setCursor(xPos, 80); // 100 is the y position (you can adjust it)
   tft.print(text);
 
-
-
-   text = "Connecting to Internet....."; // The text to display
+  text = "Connecting to Internet....."; // The text to display
   tft.setTextColor(TFT_GOLD);           // Set text color
   textWidth = tft.textWidth(text);
   xPos = (480 - textWidth) / 2;
@@ -395,6 +397,9 @@ void connectToWifi()
   const unsigned long delayBetweenAttempts = 5000; // 5 seconds between each attempt
   const int maxAttempts = 5;                       // Max number of attempts before rebooting
 
+  // DNS server configuration (using Google's DNS servers)
+  IPAddress primaryDNS(8, 8, 8, 8);  // Google DNS
+  IPAddress secondaryDNS(8, 8, 4, 4); // Google DNS
   // Print the first attempt immediately
   if (connectionAttempts == 0)
   {
@@ -426,7 +431,7 @@ void connectToWifi()
 
         tft.fillScreen(bgColor);
 
-        String text = "Unsecsessfull Connection!";
+        String text = "Unsuccessful Connection!";
         tft.setTextFont(4);
         tft.setTextColor(TFT_RED);
         tft.setTextSize(1);
@@ -461,7 +466,17 @@ void connectToWifi()
   }
 
   Serial.println("Connected to WiFi!");
+
+// Once connected, resolve the IP address of eshail.batc.org.uk
+  IPAddress ip;
+  if (WiFi.hostByName("eshail.batc.org.uk", ip)) {
+    Serial.print("Resolved IP address for eshail.batc.org.uk: ");
+    Serial.println(ip);
+  } else {
+    Serial.println("DNS resolution failed");
+  }
 }
+
 void getLocalTime()
 {
   // Synchronize time with NTP server
