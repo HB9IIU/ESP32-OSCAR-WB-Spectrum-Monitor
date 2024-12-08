@@ -2,7 +2,7 @@
 #include <config.h>
 #include <WiFi.h>
 #include <WebSocketsClient.h>
-#include <TFT_eSPI.h> // Include the TFT_eSPI library
+
 #include <vector>
 // #include <DigitsHB9IIU36pt7b.h> //  https://rop.nl/truetype2gfx/   https://fontforge.org/en-US/
 
@@ -14,19 +14,9 @@ struct SignalRegion
   size_t centerPosition;
 };
 
-TFT_eSPI tft = TFT_eSPI(); // Initialize the TFT display
+const char *websocketServer = "eshail.batc.org.uk"; // fft wss server
 
-uint16_t navyBlue = tft.color565(0, 0, 128);
-uint16_t darkBlue = tft.color565(0, 9, 75);
-uint16_t bgColor = darkBlue;
-
-const char *websocketServer = "eshail.batc.org.uk"; // IP of the server
-
-
-const int websocketPort = 443;                 // Port for WSS
-
-//
-
+const int websocketPort = 443; // Port for WSS
 WebSocketsClient webSocket;
 
 // Array to store the previous fft values
@@ -42,7 +32,7 @@ int yTopBeacon = 320;
 unsigned long previousMillisForClock = 0; // will store the last time the function was triggered
 const long intervalForClock = 1000;       // interval at which to trigger the function (1000 ms = 1 second)
 char previousTime[9] = "00:00:00";        // Optimized to only store 8 characters + null terminator
-
+int currentColorIndex = 0;// Global variable for the background color index
 //---------------------------------------------------------------------------------------
 // functions forward declarations
 void connectToWifi();
@@ -63,9 +53,7 @@ uint16_t mapValueToColor(uint16_t value)
   int topGreen = 90;                                              // higher the value, lower the upper margin
   uint8_t red = map(value, 320, yTopBeacon - topGreen, 255, 0);   // Increase red with value
   uint8_t green = map(value, 320, yTopBeacon - topGreen, 0, 255); // Decrease green with value
-  // uint8_t blue = map(value, 320, yTopBeacon - topGreen, 0, 255);  // Decrease green with value
-
-  return tft.color565(red, green, 0); // Convert RGB to 16-bit color
+  return tft.color565(red, green, 0);                             // Convert RGB to 16-bit color
 }
 
 // Function to handle FFT data and update the display
@@ -204,7 +192,7 @@ void handleFFTData(uint8_t *payload, size_t length)
         int yatCenter = yCordFromFFTvalue(fftValueAtCenter);
         int textWidth = tft.textWidth(dbLabel);                        // Get the width of the text in pixels
         int xPosition = centerPosition + leftMargin - (textWidth / 2); // Calculate horizontal position
-        if (xPosition > 0)
+        if (xPosition > 0 && displayDBvalues)
         {
           tft.setFreeFont(&FreeMono9pt7b);         // Use the FreeMono9pt7b font
           tft.setCursor(xPosition, yatCenter - 8); // Set the cursor position
@@ -344,6 +332,34 @@ void loop()
     // Save the last time the function was triggered
     previousMillisForClock = currentMillis;
   }
+
+  // Get the current touch pressure
+    int touchTFT = 0;
+
+  touchTFT = tft.getTouchRawZ();
+
+  // If touch pressure exceeds threshold, cycle to the next color
+  if (touchTFT > 500)
+  {
+    // Increment the color index, and loop back to 0 if needed
+    currentColorIndex = (currentColorIndex + 1) % 5;  // Since we have 5 colors
+
+    // Set the background color to the current color
+    bgColor = colors[currentColorIndex];
+
+    // Optionally, update the screen background color immediately
+    tft.fillScreen(bgColor);  // This will change the screen background to the new color
+
+     String text = "OSCAR 100 Wideband Spectrum Monitor"; // The text to display
+  tft.setTextFont(4);
+  tft.setTextColor(TFT_WHITE); // Set text color
+  tft.setTextSize(1);          // Set text size (you can adjust this value)
+
+  int16_t textWidth = tft.textWidth(text);
+  int xPos = (480 - textWidth) / 2;
+  tft.setCursor(xPos, 5);
+  tft.print(text);
+  }
 }
 
 // converts fft value to db
@@ -398,7 +414,7 @@ void connectToWifi()
   const int maxAttempts = 5;                       // Max number of attempts before rebooting
 
   // DNS server configuration (using Google's DNS servers)
-  IPAddress primaryDNS(8, 8, 8, 8);  // Google DNS
+  IPAddress primaryDNS(8, 8, 8, 8);   // Google DNS
   IPAddress secondaryDNS(8, 8, 4, 4); // Google DNS
   // Print the first attempt immediately
   if (connectionAttempts == 0)
@@ -467,12 +483,15 @@ void connectToWifi()
 
   Serial.println("Connected to WiFi!");
 
-// Once connected, resolve the IP address of eshail.batc.org.uk
+  // Once connected, resolve the IP address of eshail.batc.org.uk
   IPAddress ip;
-  if (WiFi.hostByName("eshail.batc.org.uk", ip)) {
+  if (WiFi.hostByName("eshail.batc.org.uk", ip))
+  {
     Serial.print("Resolved IP address for eshail.batc.org.uk: ");
     Serial.println(ip);
-  } else {
+  }
+  else
+  {
     Serial.println("DNS resolution failed");
   }
 }
