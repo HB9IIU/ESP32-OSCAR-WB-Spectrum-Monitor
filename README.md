@@ -12,7 +12,7 @@ The key difference in this project is that the functionality has been ported to 
 
 ## Demo
 
-<div style="text-align: center;"> Check out the project in action on YouTube: <a href="https://www.youtube.com/watch?v=hN2jycwo034"> <img src="https://img.youtube.com/vi/hN2jycwo034/0.jpg" alt="Watch the demo"> </a> *(Right-click on the video link to open in a new tab.)* </div>
+<center> Check out the project in action on YouTube: <a href="https://www.youtube.com/watch?v=hN2jycwo034"> <img src="https://img.youtube.com/vi/hN2jycwo034/0.jpg" alt="Watch the demo"> </a> *(Right-click on the video link to open in a new tab.)* </center>
 
 ## Screenshots
 
