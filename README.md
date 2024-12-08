@@ -18,12 +18,7 @@ Check out the project in action on YouTube:
 
 ## Screenshots
 
-Here are a few screenshots of the project:  
-- ![Screenshot 1](https://github.com/HB9IIU/ESP32-OSCAR-WB-Spectrum-Monitor/blob/main/doc/ScreenShots/IMG_7672.png)  
-- ![Screenshot 2](https://github.com/HB9IIU/ESP32-OSCAR-WB-Spectrum-Monitor/blob/main/doc/Enclosure3DprintFiles/Renderings/TFTESP32enclsoure_1.png)  
-- ![Screenshot 3](https://github.com/HB9IIU/ESP32-OSCAR-WB-Spectrum-Monitor/blob/main/doc/Enclosure3DprintFiles/Renderings/TFTESP32enclsoure_5.png)  
-
-
+<table> <tr> <td><img src="https://github.com/HB9IIU/ESP32-OSCAR-WB-Spectrum-Monitor/blob/main/doc/ScreenShots/IMG_7672.png" alt="Screenshot 1" width="200"></td> <td><img src="https://github.com/HB9IIU/ESP32-OSCAR-WB-Spectrum-Monitor/blob/main/doc/Enclosure3DprintFiles/Renderings/TFTESP32enclsoure_1.png" alt="Screenshot 2" width="200"></td> <td><img src="https://github.com/HB9IIU/ESP32-OSCAR-WB-Spectrum-Monitor/blob/main/doc/Enclosure3DprintFiles/Renderings/TFTESP32enclsoure_5.png" alt="Screenshot 3" width="200"></td> </tr> </table>
 
 
 ### Features
