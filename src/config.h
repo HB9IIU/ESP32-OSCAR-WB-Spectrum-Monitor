@@ -8,7 +8,7 @@
 const char *ssid = "MESH";
 
 
-const char *password = "Nestle2010Nestle";
+const char *password = "NotofYourBusiness";
 
 // NTP Server
 const char *ntpServer = "pool.ntp.org";  // You can use any valid NTP server
