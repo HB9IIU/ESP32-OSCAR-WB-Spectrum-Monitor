@@ -1,0 +1,46 @@
+[env:esp32-s3-devkitc-1]
+platform = espressif32
+board = esp32-s3-devkitc-1
+framework = arduino
+monitor_speed = 115200
+upload_speed = 921600
+
+build_flags =
+    -D USER_SETUP_LOADED
+    -D TFT_DARKRED=0x7800          ; Custom color
+    -D TFT_DARKYELLOW=0xB3E0      ; Dark yellow
+    -D ILI9488_DRIVER
+    -D TFT_CS=4                  ; Chip Select pin for TFT (GPIO 10 is available)
+    -D TFT_RST=5                 ; Reset pin for TFT (GPIO 17)
+    -D TFT_DC=6                  ; Data/Command pin for TFT (GPIO 16)
+    -D TFT_MOSI=11                ; SPI MOSI pin (GPIO 11 as an alternative)
+    -D TFT_SCLK=12                ; SPI Clock pin (GPIO 18 is commonly available)
+    -D TFT_BL=4                   ; Backlight pin (GPIO 4)
+    -D TOUCH_CS=7                ; Chip Select pin for touch (GPIO 21)
+    -D TFT_MISO=13                ; SPI MISO pin (GPIO 19 is available)
+    -D TFT_ROTATE=0               ; Orientation (0 = no rotation)
+    -D USE_HSPI_PORT
+
+   
+    # Font Configuration
+    ; -D LOAD_FONT1   ; Original Adafruit 8 pixel font, needs ~1820 bytes in FLASH
+    -D LOAD_FONT2    ; Small 16 pixel font, needs ~3534 bytes in FLASH, 96 characters
+    -D LOAD_FONT4    ; Medium 26 pixel font, needs ~5848 bytes in FLASH, 96 characters
+    ; -D LOAD_FONT6   ; Large 48 pixel font, needs ~2666 bytes in FLASH, only characters 1234567890:-.apm
+    -D LOAD_FONT7    ; 7-segment 48 pixel font, needs ~2438 bytes in FLASH, only characters 1234567890:-.
+    ; -D LOAD_FONT8   ; Large 75 pixel font, needs ~3256 bytes in FLASH, only characters 1234567890:-.
+    -D LOAD_GFXFF    ; Include access to 48 Adafruit_GFX free fonts FF1 to FF48 and custom fonts
+    -D SMOOTH_FONT   ; Enable smooth fonts
+
+    # SPI Configuration
+    -D SPI_FREQUENCY=27000000  ; Set SPI frequency for TFT display
+    -D SPI_TOUCH_FREQUENCY=2500000 ; Set touch SPI frequency
+    -D SPI_READ_FREQUENCY=16000000  ; Set read frequency for SPI
+
+# Note: Dependency libraries are already included in the 'lib' folder of this project.
+# For setup instructions, refer to the README.md file.
+
+
+
+
+# HB9IIU November 2024
