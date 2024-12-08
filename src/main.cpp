@@ -30,7 +30,6 @@ const float BANDWIDTH = 4.5;      // MHz
 // for gradient calculation
 int yTopBeacon = 320;
 unsigned long previousMillisForClock = 0; // will store the last time the function was triggered
-const long intervalForClock = 1000;       // interval at which to trigger the function (1000 ms = 1 second)
 char previousTime[9] = "00:00:00";        // Optimized to only store 8 characters + null terminator
 int currentColorIndex = 0;// Global variable for the background color index
 //---------------------------------------------------------------------------------------
@@ -44,6 +43,8 @@ uint16_t yCordFromFFTvalue(uint16_t fftValue);
 float mapXToFrequency(int x);
 int mapFrequencyToX(float frequency);
 void calculateThresholds(uint16_t *fftValues, size_t numFFTValues, uint16_t &noiseFloor, uint16_t &signalThreshold);
+unsigned long lastSyncTime = 0;  // Store the last sync time in milliseconds
+const unsigned long syncInterval = 3 * 60 * 60 * 1000;  // 3 hours in milliseconds
 
 //---------------------------------------------------------------------------------------
 
@@ -326,13 +327,7 @@ void loop()
   // Get the current time
   unsigned long currentMillis = millis();
 
-  // Check if 1000 ms has passed
-  if (currentMillis - previousMillisForClock >= intervalForClock)
-  {
-    // Save the last time the function was triggered
-    previousMillisForClock = currentMillis;
-  }
-
+  
   // Get the current touch pressure
     int touchTFT = 0;
 
@@ -495,20 +490,30 @@ void connectToWifi()
     Serial.println("DNS resolution failed");
   }
 }
-
 void getLocalTime()
 {
-  // Synchronize time with NTP server
-  configTime(utcOffsetInSeconds, utcOffsetInSeconds, ntpServer); // Set time zone offset and NTP server
+  unsigned long currentMillis = millis();
+
+  // Check if it's time to update the time (3-hour interval)
+  if (currentMillis - lastSyncTime >= syncInterval)
+  {
+    // Synchronize time with NTP server if more than 3 hours have passed
+    configTime(utcOffsetInSeconds, utcOffsetInSeconds, ntpServer); // Set time zone offset and NTP server
+
+    // Update the last sync time
+    lastSyncTime = currentMillis;
+  }
 
   // Get local time
   struct tm timeinfo;
   if (!getLocalTime(&timeinfo))
   {
-    Serial.println("Failed to obtain time");
+    Serial.println("Failed to obtain time, retrying");
+        configTime(utcOffsetInSeconds, utcOffsetInSeconds, ntpServer); // Set time zone offset and NTP server
+
     return;
   }
-
+  
   // Format time into a string
   char timeString[9]; // Optimized to only store 8 characters + null terminator
   strftime(timeString, sizeof(timeString), "%H:%M:%S", &timeinfo);
@@ -529,10 +534,12 @@ void getLocalTime()
   tft.setTextColor(TFT_GREENYELLOW); // Set text color for new time
   tft.setCursor(175, 30);
   tft.print(timeString); // Print the new time
+
   // Save the current time for the next cycle
   strcpy(previousTime, timeString);
 }
-/* NOT WORKING DUE TO MEMORY ISSUES
+
+/* NOT WORKING DUE TO MEMORY ISSUES Work In Progress
 void display7segmentClockNICE(unsigned long unixTime, int xOffset, int yOffset, uint16_t textColor, bool refresh)
 {
 
