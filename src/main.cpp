@@ -104,7 +104,7 @@ void handleFFTData(uint8_t *payload, size_t length)
       uint16_t dotColor = mapValueToColor(y);
       tft.drawPixel(xCoord + leftMargin, y, dotColor);
     }
-    // }
+
     previousYcoordValue[xCoord] = yCoord;
 
     if (yCoord < yTopBeacon && xCoord < 312)
