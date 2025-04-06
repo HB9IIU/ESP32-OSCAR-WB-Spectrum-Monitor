@@ -31,7 +31,7 @@ const float BANDWIDTH = 4.5;      // MHz
 int yTopBeacon = 320;
 unsigned long previousMillisForClock = 0; // will store the last time the function was triggered
 char previousTime[9] = "00:00:00";        // Optimized to only store 8 characters + null terminator
-int currentColorIndex = 0;// Global variable for the background color index
+int currentColorIndex = 0;                // Global variable for the background color index
 //---------------------------------------------------------------------------------------
 // functions forward declarations
 void connectToWifi();
@@ -43,8 +43,8 @@ uint16_t yCordFromFFTvalue(uint16_t fftValue);
 float mapXToFrequency(int x);
 int mapFrequencyToX(float frequency);
 void calculateThresholds(uint16_t *fftValues, size_t numFFTValues, uint16_t &noiseFloor, uint16_t &signalThreshold);
-unsigned long lastSyncTime = 0;  // Store the last sync time in milliseconds
-const unsigned long syncInterval = 3 * 60 * 60 * 1000;  // 3 hours in milliseconds
+unsigned long lastSyncTime = 0;                        // Store the last sync time in milliseconds
+const unsigned long syncInterval = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
 
 //---------------------------------------------------------------------------------------
 
@@ -94,6 +94,13 @@ void handleFFTData(uint8_t *payload, size_t length)
     uint16_t fftValue = payload[i] | (payload[i + 1] << 8);
     fftValues[xCoord] = fftValue;
     uint16_t yCoord = yCordFromFFTvalue(fftValue);
+    // --------- correction F6BQP ----------------
+    if (yCoord < topMargin)
+    {
+      yCoord = topMargin;
+    }
+    // -------------------------------------------
+
     uint16_t previousYcoord = previousYcoordValue[xCoord];
 
     tft.drawLine(xCoord + leftMargin, topMargin, xCoord + leftMargin, yCoord, bgColor);
@@ -327,9 +334,8 @@ void loop()
   // Get the current time
   unsigned long currentMillis = millis();
 
-  
   // Get the current touch pressure
-    int touchTFT = 0;
+  int touchTFT = 0;
 
   touchTFT = tft.getTouchRawZ();
 
@@ -337,23 +343,23 @@ void loop()
   if (touchTFT > 500)
   {
     // Increment the color index, and loop back to 0 if needed
-    currentColorIndex = (currentColorIndex + 1) % 5;  // Since we have 5 colors
+    currentColorIndex = (currentColorIndex + 1) % 5; // Since we have 5 colors
 
     // Set the background color to the current color
     bgColor = colors[currentColorIndex];
 
     // Optionally, update the screen background color immediately
-    tft.fillScreen(bgColor);  // This will change the screen background to the new color
+    tft.fillScreen(bgColor); // This will change the screen background to the new color
 
-     String text = "OSCAR 100 Wideband Spectrum Monitor"; // The text to display
-  tft.setTextFont(4);
-  tft.setTextColor(TFT_WHITE); // Set text color
-  tft.setTextSize(1);          // Set text size (you can adjust this value)
+    String text = "OSCAR 100 Wideband Spectrum Monitor"; // The text to display
+    tft.setTextFont(4);
+    tft.setTextColor(TFT_WHITE); // Set text color
+    tft.setTextSize(1);          // Set text size (you can adjust this value)
 
-  int16_t textWidth = tft.textWidth(text);
-  int xPos = (480 - textWidth) / 2;
-  tft.setCursor(xPos, 5);
-  tft.print(text);
+    int16_t textWidth = tft.textWidth(text);
+    int xPos = (480 - textWidth) / 2;
+    tft.setCursor(xPos, 5);
+    tft.print(text);
   }
 }
 
@@ -509,11 +515,11 @@ void getLocalTime()
   if (!getLocalTime(&timeinfo))
   {
     Serial.println("Failed to obtain time, retrying");
-        configTime(utcOffsetInSeconds, utcOffsetInSeconds, ntpServer); // Set time zone offset and NTP server
+    configTime(utcOffsetInSeconds, utcOffsetInSeconds, ntpServer); // Set time zone offset and NTP server
 
     return;
   }
-  
+
   // Format time into a string
   char timeString[9]; // Optimized to only store 8 characters + null terminator
   strftime(timeString, sizeof(timeString), "%H:%M:%S", &timeinfo);
