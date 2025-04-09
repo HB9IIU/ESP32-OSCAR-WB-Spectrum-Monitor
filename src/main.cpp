@@ -32,6 +32,11 @@ int yTopBeacon = 320;
 unsigned long previousMillisForClock = 0; // will store the last time the function was triggered
 char previousTime[9] = "00:00:00";        // Optimized to only store 8 characters + null terminator
 int currentColorIndex = 0;                // Global variable for the background color index
+
+
+
+
+
 //---------------------------------------------------------------------------------------
 // functions forward declarations
 void connectToWifi();
@@ -205,11 +210,17 @@ void handleFFTData(uint8_t *payload, size_t length)
           tft.setFreeFont(&FreeMono9pt7b);         // Use the FreeMono9pt7b font
           tft.setCursor(xPosition, yatCenter - 8); // Set the cursor position
           tft.setTextColor(TFT_WHITE, TFT_BLACK);  // Set the text color (foreground, background)
-          if ((yatCenter - 8) > topMargin)
+          
+          
+          
+          // TESTING
+          if ((yatCenter-20) > topMargin)   
           {
 
             tft.print(dbLabel);
           }
+
+     
         }
       }
     }
